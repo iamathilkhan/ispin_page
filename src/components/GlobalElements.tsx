@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 
 const GrainOverlay = () => (
   <div className="grain-overlay">
@@ -77,12 +78,9 @@ const ScrollProgress = () => {
   return <div ref={ref} className="scroll-progress" />;
 };
 
-interface NavBarProps {
-  activeSection: string;
-}
-
-const NavBar = ({ activeSection }: NavBarProps) => {
+const NavBar = () => {
   const [scrolled, setScrolled] = useState(false);
+  const { pathname } = useLocation();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 50);
@@ -91,31 +89,27 @@ const NavBar = ({ activeSection }: NavBarProps) => {
   }, []);
 
   const links = [
-    { id: 'story', label: 'Story' },
-    { id: 'projects', label: 'Projects' },
-    { id: 'team', label: 'Team' },
-    { id: 'contact', label: 'Contact' },
+    { to: '/', label: 'Home' },
+    { to: '/history', label: 'History' },
+    { to: '/team', label: 'Team' },
+    { to: '/contact', label: 'Contact' },
   ];
-
-  const scrollTo = useCallback((id: string) => {
-    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
-  }, []);
 
   return (
     <nav className={`nav-fixed flex items-center justify-between ${scrolled ? 'scrolled' : ''}`}>
-      <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="font-syne text-xl font-bold interactive">
-        <span className="text-orange">i</span>
-        <span className="text-primary-text">SPIN</span>
-      </button>
+      <Link to="/" className="font-mono text-xl font-bold interactive">
+        <span className="text-orange">{"{"}i{"}"}</span>
+        <span className="text-primary-text">spin</span>
+      </Link>
       <div className="flex gap-6">
         {links.map(l => (
-          <button
-            key={l.id}
-            onClick={() => scrollTo(l.id)}
-            className={`nav-link interactive ${activeSection === l.id ? 'active' : ''}`}
+          <Link
+            key={l.to}
+            to={l.to}
+            className={`nav-link interactive ${pathname === l.to ? 'active' : ''}`}
           >
             {l.label}
-          </button>
+          </Link>
         ))}
       </div>
     </nav>

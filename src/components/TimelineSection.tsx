@@ -1,5 +1,7 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { motion, useInView } from 'framer-motion';
+import { Link } from 'react-router-dom';
+import { members as allMembers } from '../lib/members';
 
 // ─── Chapter data ───
 export interface ChapterData {
@@ -9,71 +11,79 @@ export interface ChapterData {
   chips?: string[];
   extraLabel?: { text: string; color: 'orange' | 'blue' };
   flagship?: boolean;
+  memberIds?: string[];
 }
 
 export const chapters: ChapterData[] = [
   {
     year: '2021',
-    title: 'iSPIN Is Initiated',
-    content: 'Faculty at NSCET establish iSPIN — a student technical organization built on a radical premise: give students real infrastructure to own, build, and maintain. The founding team is assembled.',
+    title: '{i}spin Is Initiated',
+    content: 'Faculty at NSCET establish {i}spin — a student technical organization built on a radical premise: give students real infrastructure to own, build, and maintain. The founding team is assembled.',
   },
   {
     year: '2021',
     title: 'NSCET Website — Launched',
+    memberIds: ['thanush','rishikesh','logesh'],
     chips: ['DEPLOYED', 'Web Development', 'React'],
     extraLabel: { text: '// Still live and maintained today', color: 'blue' },
-    content: "iSPIN's first mission: design and deploy the official NSCET college website. Built from the ground up by student engineers with faculty guidance — and shipped to production within the founding year.",
+    content: "{i}spin's first mission: design and deploy the official NSCET college website. Built from the ground up by student engineers with faculty guidance — and shipped to production within the founding year.",
   },
   {
     year: '2022',
     title: 'The Second Wave — New Members Join',
-    content: "iSPIN opens its first structured recruitment cycle. New student engineers are onboarded, expanding the organization's capacity and bringing fresh technical perspectives to ongoing operations.",
+    content: "{i}spin opens its first structured recruitment cycle. New student engineers are onboarded, expanding the organization's capacity and bringing fresh technical perspectives to ongoing operations.",
   },
   {
     year: '2022',
     title: 'Library Management System — Deployed',
+    memberIds: ['rishikesh','ahamed','pandeeswaran'],
     chips: ['DEPLOYED', 'Full Stack', 'Database'],
-    content: "iSPIN engineers design and deploy a department library management system — digitizing book inventories, borrow records, and catalog operations across NSCET's departments.",
+    content: "{i}spin engineers design and deploy a department library management system — digitizing book inventories, borrow records, and catalog operations across NSCET's departments.",
   },
   {
     year: '2023',
     title: 'Skill-Based Selection Introduced',
     extraLabel: { text: '// Merit-based. Mission-driven.', color: 'orange' },
-    content: "iSPIN formalizes its recruitment process. For the first time, new members are selected through technical assessments — ensuring every engineer who joins is equipped to contribute to live production systems.",
+    content: "{i}spin formalizes its recruitment process. For the first time, new members are selected through technical assessments — ensuring every engineer who joins is equipped to contribute to live production systems.",
   },
   {
     year: '2023',
     title: 'Transport Management System — Deployed',
+    memberIds: ['logesh','sakthi'],
     chips: ['DEPLOYED', 'IoT', 'Real-time', 'Mobile'],
     content: "Real-time GPS tracking and scheduling for NSCET's bus fleet. Student engineers build a live transport system connecting campus mobility with data pipelines — used by students and staff daily.",
   },
   {
     year: '2024',
     title: 'Hackathon Website — Built & Launched',
+    memberIds: ['thanush','pandeeswaran'],
     chips: ['DEPLOYED', 'Event Tech', 'Auth', 'Web Dev'],
-    content: "NSCET conducts its first organized hackathon. iSPIN engineers design and ship the registration portal, team management system, and result publishing platform — end-to-end, in-house, in time.",
+    content: "NSCET conducts its first organized hackathon. {i}spin engineers design and ship the registration portal, team management system, and result publishing platform — end-to-end, in-house, in time.",
   },
   {
     year: '2025',
     title: 'Third Generation — Selection with IQarena',
-    content: "iSPIN's most rigorous intake yet. New members are selected using a structured technical assessment conducted on the organization's own evaluation infrastructure — engineers assessed by the tools they'll build.",
+    content: "{i}spin's most rigorous intake yet. New members are selected using a structured technical assessment conducted on the organization's own evaluation infrastructure — engineers assessed by the tools they'll build.",
   },
   {
     year: '2025',
     title: 'IQarena — Assessment Portal Deployed',
+    memberIds: ['ahamed','sakthi','rishikesh'],
     chips: ['DEPLOYED', 'EdTech', 'Assessment', 'Portal'],
-    content: "iSPIN builds and launches IQarena — a secure, scalable online examination and assessment platform enabling faculty to create, assign, and evaluate tests across all NSCET departments.",
+    content: "{i}spin builds and launches IQarena — a secure, scalable online examination and assessment platform enabling faculty to create, assign, and evaluate tests across all NSCET departments.",
   },
   {
     year: '2026',
     title: 'IQarena 2.0 — JEE & NEET Preparation',
+    memberIds: ['ahamed','logesh','pandeeswaran'],
     chips: ['LIVE', 'EdTech', 'JEE/NEET', 'Scale'],
-    extraLabel: { text: "// iSPIN's first public-facing educational platform", color: 'blue' },
+    extraLabel: { text: "// {i}spin's first public-facing educational platform", color: 'blue' },
     content: "IQarena evolves. Version 2.0 extends the platform beyond internal assessments — launching a dedicated preparation module for JEE and NEET, serving students at scale for national-level competitive examinations.",
   },
   {
     year: '2026',
-    title: "Campus Nexus — iSPIN's Most Ambitious Build",
+    title: "Campus Nexus — {i}spin's Most Ambitious Build",
+    memberIds: allMembers.map(m => m.id),
     chips: ['LIVE', 'ERP', 'Enterprise', 'Full Stack'],
     flagship: true,
     content: "Five years of accumulated engineering knowledge culminates in Campus Nexus — a full-scale college ERP system managing academic records, administrative workflows, staff operations, and student data for the entire institution.",
@@ -491,64 +501,99 @@ const animationComponents: Record<number, React.FC<{ playing: boolean }>> = {
   10: ERPArchitecture,
 };
 
-// ─── Chapter Component ───
+// ─── Chapter Component — card-center → slide-to-side animation ───
 interface TimelineChapterProps {
   chapter: ChapterData;
   index: number;
 }
 
-const TimelineChapter = ({ chapter, index }: TimelineChapterProps) => {
+interface TimelineChapterPropsExtended extends TimelineChapterProps {
+  onShowMembers: (m: Member[]) => void;
+}
+
+const TimelineChapter = ({ chapter, index, onShowMembers }: TimelineChapterPropsExtended) => {
   const ref = useRef<HTMLDivElement>(null);
-  const inView = useInView(ref, { once: false, amount: 0.25 });
+  const inView = useInView(ref, { once: true, amount: 0.35 });
   const isOdd = index % 2 === 0;
   const AnimComponent = animationComponents[index];
+
+  // Phase 1 → 0: invisible
+  // Phase 2 → card appears centered (x: 0, opacity 1)
+  // Phase 3 → card slides to side; anim panel slides from opposite side
+
+  const cardVariants = {
+    hidden:   { opacity: 0, x: 0, scale: 0.94 },
+    center:   { opacity: 1, x: 0, scale: 1,
+                transition: { duration: 0.55, ease: 'easeOut' } },
+    settled:  {
+      opacity: 1,
+      x: isOdd ? '-12%' : '12%',
+      scale: 1,
+      transition: { duration: 0.65, ease: [0.25, 0.46, 0.45, 0.94], delay: 0.05 },
+    },
+  };
+
+  const animPanelVariants = {
+    hidden:  { opacity: 0, x: isOdd ? '60%' : '-60%', scale: 0.92 },
+    visible: {
+      opacity: 1, x: 0, scale: 1,
+      transition: { duration: 0.65, ease: [0.25, 0.46, 0.45, 0.94], delay: 0.2 },
+    },
+  };
+
+  const [phase, setPhase] = useState<'hidden' | 'center' | 'settled'>('hidden');
+
+  useEffect(() => {
+    if (!inView) return;
+    // Small delay then show card in center
+    const t1 = setTimeout(() => setPhase('center'), 80);
+    // Then slide to side after card has rendered
+    const t2 = setTimeout(() => setPhase('settled'), 680);
+    return () => { clearTimeout(t1); clearTimeout(t2); };
+  }, [inView]);
 
   return (
     <div
       ref={ref}
-      className={`relative min-h-[60vh] flex flex-col md:flex-row items-center gap-8 py-16 px-6 ${
+      className={`relative min-h-[65vh] flex flex-col md:flex-row items-center gap-8 py-16 px-6 ${
         isOdd ? 'md:flex-row' : 'md:flex-row-reverse'
       }`}
       style={{ maxWidth: 1200, margin: '0 auto' }}
     >
+      {/* Year watermark */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden">
         <span className="font-syne font-extrabold" style={{ fontSize: '20vw', opacity: 0.03, color: '#FF5E1A' }}>
           {chapter.year}
         </span>
       </div>
 
+      {/* ── Text card: appears center → slides to side ── */}
       <motion.div
-        className={`relative z-10 flex-1 ${isOdd ? 'md:pl-[10vw]' : 'md:pr-[10vw]'}`}
-        initial={{ opacity: 0, y: 60 }}
-        animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 60 }}
-        transition={{ duration: 0.8, ease: 'easeOut' }}
+        className={`relative z-10 flex-1 ${isOdd ? 'md:pl-[6vw]' : 'md:pr-[6vw]'}`}
+        variants={cardVariants}
+        initial="hidden"
+        animate={phase}
       >
         {chapter.flagship && (
-          <motion.span
-            initial={{ opacity: 0 }}
-            animate={inView ? { opacity: 1 } : {}}
-            transition={{ delay: 0 }}
+          <span
             className="inline-block font-mono text-green mb-2"
             style={{ fontSize: '0.65rem', letterSpacing: '0.3em' }}
           >
             FLAGSHIP PROJECT
-          </motion.span>
+          </span>
         )}
 
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={inView ? { opacity: 1 } : {}}
-          transition={{ delay: 0 }}
+        <div
           className="inline-block font-mono text-orange px-3 py-1 rounded mb-3"
           style={{ fontSize: '0.7rem', background: 'rgba(255,94,26,0.1)' }}
         >
           {chapter.year}
-        </motion.div>
+        </div>
 
         <motion.h3
-          initial={{ opacity: 0, y: 20 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ delay: 0.15, duration: 0.6 }}
+          initial={{ opacity: 0, y: 16 }}
+          animate={phase === 'hidden' ? { opacity: 0, y: 16 } : { opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.18 }}
           className="font-syne font-bold text-2xl md:text-3xl mt-2 mb-4"
         >
           {chapter.title}
@@ -557,8 +602,8 @@ const TimelineChapter = ({ chapter, index }: TimelineChapterProps) => {
         {chapter.extraLabel && (
           <motion.p
             initial={{ opacity: 0 }}
-            animate={inView ? { opacity: 1 } : {}}
-            transition={{ delay: 0.2 }}
+            animate={phase === 'hidden' ? { opacity: 0 } : { opacity: 1 }}
+            transition={{ duration: 0.4, delay: 0.28 }}
             className="font-mono mb-3"
             style={{
               fontSize: '0.75rem',
@@ -570,9 +615,9 @@ const TimelineChapter = ({ chapter, index }: TimelineChapterProps) => {
         )}
 
         <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ delay: 0.3, duration: 0.6 }}
+          initial={{ opacity: 0, y: 12 }}
+          animate={phase === 'hidden' ? { opacity: 0, y: 12 } : { opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.35 }}
           className="font-mono text-secondary-text leading-relaxed"
           style={{ fontSize: '0.9rem' }}
         >
@@ -582,8 +627,8 @@ const TimelineChapter = ({ chapter, index }: TimelineChapterProps) => {
         {chapter.chips && (
           <motion.div
             initial={{ opacity: 0 }}
-            animate={inView ? { opacity: 1 } : {}}
-            transition={{ delay: 0.45 }}
+            animate={phase === 'hidden' ? { opacity: 0 } : { opacity: 1 }}
+            transition={{ duration: 0.4, delay: 0.48 }}
             className="flex flex-wrap gap-2 mt-4"
           >
             {chapter.chips.map(chip => (
@@ -600,24 +645,36 @@ const TimelineChapter = ({ chapter, index }: TimelineChapterProps) => {
                 {chip}
               </span>
             ))}
+            {chapter.memberIds && chapter.memberIds.length > 0 && (
+              <Link
+                to={`/team?members=${chapter.memberIds.join(',')}`}
+                className="font-mono px-3 py-1 ml-2 rounded nav-link"
+                style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.04)', color: '#F0F0F0', textDecoration: 'none' }}
+              >
+                View Team
+              </Link>
+            )}
           </motion.div>
         )}
       </motion.div>
 
+      {/* ── Animation panel: slides in from opposite side after card settles ── */}
       <motion.div
         className={`relative z-10 w-full md:w-[320px] h-[200px] md:h-[240px] rounded-lg overflow-hidden ${
           chapter.flagship ? 'ring-1 ring-orange' : ''
         }`}
         style={{
           background: 'rgba(255,255,255,0.03)',
-          border: chapter.flagship ? '1px solid rgba(255,94,26,0.6)' : '1px solid rgba(255,255,255,0.06)',
+          border: chapter.flagship
+            ? '1px solid rgba(255,94,26,0.6)'
+            : '1px solid rgba(255,255,255,0.06)',
           ...(chapter.flagship ? { animation: 'pulse-glow 3s ease-in-out infinite' } : {}),
         }}
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={inView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.95 }}
-        transition={{ delay: 0.45, duration: 0.6 }}
+        variants={animPanelVariants}
+        initial="hidden"
+        animate={phase === 'settled' ? 'visible' : 'hidden'}
       >
-        {AnimComponent && <AnimComponent playing={inView} />}
+        {AnimComponent && <AnimComponent playing={phase === 'settled'} />}
       </motion.div>
     </div>
   );

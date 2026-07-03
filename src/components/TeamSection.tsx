@@ -3,15 +3,17 @@ import { motion, useInView } from 'framer-motion';
 
 // ─── Faculty & Engineer Data ───
 const faculty = [
-  { pid: '001', name: 'Faculty Mentor 01', role: 'iSPIN Program Director', cpu: '94%', mem: '2.1G', bio: 'Overseeing technical strategy and student growth', initials: 'FM' },
-  { pid: '002', name: 'Faculty Mentor 02', role: 'iSPIN Technical Advisor', cpu: '87%', mem: '1.8G', bio: 'Guiding engineering decisions and deployment', initials: 'FA' },
+  { pid: '001', name: 'Faculty Mentor 01', role: '{i}spin Program Director', cpu: '94%', mem: '2.1G', bio: 'Overseeing technical strategy and student growth', initials: 'FM' },
+  { pid: '002', name: 'Faculty Mentor 02', role: '{i}spin Technical Advisor', cpu: '87%', mem: '1.8G', bio: 'Guiding engineering decisions and deployment', initials: 'FA' },
 ];
 
 const engineers = [
-  { pid: '101', name: 'Engineer 01', role: 'Full Stack Engineer', batch: '2023 Batch', skills: ['React', 'Node.js', 'PostgreSQL', 'Redis'], initials: 'E1' },
-  { pid: '102', name: 'Engineer 02', role: 'Systems Engineer', batch: '2023 Batch', skills: ['IoT', 'Python', 'MQTT', 'Embedded'], initials: 'E2' },
-  { pid: '103', name: 'Engineer 03', role: 'Frontend Engineer', batch: '2024 Batch', skills: ['React', 'Framer Motion', 'SVG', 'CSS'], initials: 'E3' },
-  { pid: '104', name: 'Engineer 04', role: 'Backend Engineer', batch: '2024 Batch', skills: ['Node.js', 'Redis', 'Docker', 'REST API'], initials: 'E4' },
+  { pid: '101', name: 'Thanush',          dept: 'IT Dept',    year: 'Final Year', skills: ['React', 'Node.js', 'PostgreSQL'],      initials: 'TH' },
+  { pid: '102', name: 'Rishikesh',        dept: 'IT Dept',    year: 'Final Year', skills: ['Python', 'IoT', 'MQTT'],               initials: 'RK' },
+  { pid: '103', name: 'Logesh',           dept: 'AI&DS Dept', year: 'Final Year', skills: ['ML', 'Python', 'Data Engineering'],    initials: 'LG' },
+  { pid: '104', name: 'Ahamed Athil Khan',dept: 'CSE Dept',   year: 'Final Year', skills: ['Full Stack', 'REST API', 'Docker'],    initials: 'AK' },
+  { pid: '105', name: 'Pandeeswaran',     dept: 'CSE Dept',   year: 'Final Year', skills: ['React', 'Tailwind', 'Framer Motion'], initials: 'PD' },
+  { pid: '106', name: 'Sakthi Sundhar',   dept: 'CSE Dept',   year: 'Final Year', skills: ['Backend', 'Redis', 'DevOps'],         initials: 'SS' },
 ];
 
 // ─── Contribution Grid ───
@@ -60,7 +62,6 @@ const FacultyCard = ({ f }: { f: typeof faculty[0] }) => {
       <div className="flex flex-col md:flex-row items-start md:items-center gap-4 justify-between">
         <div className="flex items-center gap-4">
           <span className="font-mono" style={{ fontSize: '0.65rem', color: 'rgba(0,123,255,0.6)' }}>PID#{f.pid}</span>
-          {/* Avatar */}
           <div className="relative w-11 h-11 rounded-full flex items-center justify-center"
             style={{ background: 'conic-gradient(#007BFF, #FF5E1A, #007BFF)' }}>
             <div className="w-9 h-9 rounded-full flex items-center justify-center" style={{ background: '#111318' }}>
@@ -98,10 +99,13 @@ const FacultyCard = ({ f }: { f: typeof faculty[0] }) => {
 };
 
 // ─── Engineer Card ───
-const EngineerCard = ({ e }: { e: typeof engineers[0] }) => (
-  <div
+const EngineerCard = ({ e, delay }: { e: typeof engineers[0]; delay: number }) => (
+  <motion.div
     className="glass interactive p-6 text-center"
     style={{ borderTop: '2px solid rgba(255,94,26,0.4)' }}
+    initial={{ opacity: 0, y: 30 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.5, delay }}
   >
     <div className="flex items-center justify-between mb-3">
       <span className="font-mono" style={{ fontSize: '0.65rem', color: 'rgba(255,94,26,0.5)' }}>PID#{e.pid}</span>
@@ -124,13 +128,13 @@ const EngineerCard = ({ e }: { e: typeof engineers[0] }) => (
           background: '#111318',
         }}
       >
-        <span className="font-syne font-bold">{e.initials}</span>
+        <span className="font-syne font-bold text-sm">{e.initials}</span>
       </div>
     </div>
 
-    <div className="font-syne font-semibold text-sm mb-1">{e.name}</div>
-    <div className="font-mono text-orange" style={{ fontSize: '0.75rem' }}>{e.role}</div>
-    <div className="font-mono text-muted-text mb-3" style={{ fontSize: '0.65rem' }}>{e.batch}</div>
+    <div className="font-syne font-semibold text-sm mb-0.5">{e.name}</div>
+    <div className="font-mono text-orange" style={{ fontSize: '0.72rem' }}>{e.dept}</div>
+    <div className="font-mono text-muted-text mb-3" style={{ fontSize: '0.65rem' }}>{e.year}</div>
 
     <div className="flex flex-wrap justify-center gap-1 mb-3">
       {e.skills.map(s => (
@@ -142,7 +146,7 @@ const EngineerCard = ({ e }: { e: typeof engineers[0] }) => (
     </div>
 
     <div className="flex justify-center"><Sparkline /></div>
-  </div>
+  </motion.div>
 );
 
 // ─── Team Section ───
@@ -172,7 +176,7 @@ const TeamSection = () => {
         transition={{ duration: 0.8 }}
       >
         <p className="font-mono mb-3" style={{ fontSize: '0.7rem', color: 'rgba(255,94,26,0.6)', letterSpacing: '0.4em' }}>
-          {'// PROCESS REGISTRY · iSPIN KERNEL v5.0'}
+          {'// PROCESS REGISTRY · {i}spin KERNEL v5.0'}
         </p>
         <h2 className="font-syne font-extrabold mb-6" style={{ fontSize: 'clamp(2rem, 5vw, 3.5rem)' }}>
           ACTIVE PROCESSES
@@ -184,7 +188,7 @@ const TeamSection = () => {
           </span>
           <span className="font-mono flex items-center gap-1.5">
             <span className="w-2 h-2 rounded-full inline-block" style={{ background: '#00FF88' }} />
-            4 USER PROCESSES
+            6 USER PROCESSES
           </span>
           <span className="font-mono flex items-center gap-1.5">
             <span className="w-2 h-2 rounded-full inline-block" style={{ background: '#FF5E1A' }} />
@@ -204,10 +208,10 @@ const TeamSection = () => {
       {/* Engineers */}
       <div className="relative z-10 max-w-[1100px] mx-auto">
         <p className="font-mono text-muted-text mb-6" style={{ fontSize: '0.7rem' }}>
-          {'// USER PROCESSES · ACTIVE CONTRIBUTORS'}
+          {'// USER PROCESSES · ACTIVE CONTRIBUTORS — FINAL YEAR ENGINEERS'}
         </p>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {engineers.map(e => <EngineerCard key={e.pid} e={e} />)}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {engineers.map((e, i) => <EngineerCard key={e.pid} e={e} delay={i * 0.1} />)}
         </div>
       </div>
 
@@ -220,11 +224,11 @@ const TeamSection = () => {
         }}
       >
         <span className="font-mono text-muted-text" style={{ fontSize: '0.7rem' }}>
-          iSPIN@NSCET:~$ team --list --status=active
+          {'{i}spin@NSCET:~$ team --list --status=active'}
           <span className="inline-block w-2 h-3 ml-1" style={{ background: '#FF5E1A', animation: 'blink 1s infinite' }} />
         </span>
         <span className="font-mono text-secondary-text" style={{ fontSize: '0.7rem' }}>
-          {'> 6 processes loaded · 0 errors · kernel stable'}
+          {'> 8 processes loaded · 0 errors · kernel stable'}
         </span>
         <span className="font-mono text-muted-text" style={{ fontSize: '0.65rem' }}>
           last updated: 2026-01-01 00:00 IST

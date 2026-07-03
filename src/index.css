@@ -47,11 +47,11 @@
   body {
     background: #0A0A0A;
     color: #F0F0F0;
-    font-family: 'DM Mono', monospace;
+    font-family: 'JetBrains Mono', 'Source Code Pro', monospace;
     overflow-x: hidden;
   }
   h1, h2, h3, h4 {
-    font-family: 'Syne', sans-serif;
+    font-family: 'JetBrains Mono', 'Source Code Pro', monospace;
   }
 }
 
@@ -81,13 +81,13 @@
   .bg-orange { background: #FF5E1A; }
   .bg-blue { background: #007BFF; }
   .glow-orange { box-shadow: 0 0 20px rgba(255, 94, 26, 0.3); }
-  .font-syne { font-family: 'Syne', sans-serif; }
-  .font-mono { font-family: 'DM Mono', monospace; }
+  .font-syne { font-family: 'JetBrains Mono', 'Source Code Pro', monospace; }
+  .font-mono { font-family: 'JetBrains Mono', 'Source Code Pro', monospace; }
 }
 
 @layer utilities {
   .label-style {
-    font-family: 'DM Mono', monospace;
+    font-family: 'JetBrains Mono', 'Source Code Pro', monospace;
     font-size: 0.75rem;
     color: #FF5E1A;
     letter-spacing: 0.3em;
@@ -164,9 +164,9 @@
 }
 
 /* Nav link hover underline */
-.nav-link {
+  .nav-link {
   position: relative;
-  font-family: 'DM Mono', monospace;
+  font-family: 'JetBrains Mono', 'Source Code Pro', monospace;
   font-size: 0.75rem;
   color: #8A8F9E;
   transition: color 0.3s;
@@ -212,14 +212,14 @@
 .floating-field {
   position: relative;
 }
-.floating-field input,
-.floating-field textarea {
+  .floating-field input,
+  .floating-field textarea {
   width: 100%;
   background: rgba(255,255,255,0.03);
   border: none;
   border-bottom: 1px solid rgba(255,255,255,0.1);
   color: #F0F0F0;
-  font-family: 'DM Mono', monospace;
+  font-family: 'JetBrains Mono', 'Source Code Pro', monospace;
   font-size: 0.9rem;
   padding: 1.25rem 0 0.5rem;
   outline: none;
@@ -230,10 +230,10 @@
   border-bottom-color: #FF5E1A;
   box-shadow: 0 1px 0 0 #FF5E1A;
 }
-.floating-field label {
+  .floating-field label {
   position: absolute;
   left: 0; top: 1rem;
-  font-family: 'DM Mono', monospace;
+  font-family: 'JetBrains Mono', 'Source Code Pro', monospace;
   font-size: 0.85rem;
   color: #4A4F5E;
   transition: all 0.3s;
